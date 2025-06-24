@@ -39,19 +39,15 @@ class MQTTController {
         client(secureClient) {}
 
     void begin() {
-      connectToWiFi();  // Tente la connexion Wi-Fi + récupère topic_base et user_id
-
+      //connectToWiFi();  // Tente la connexion Wi-Fi + récupère topic_base et user_id
       if (!wifi_connected) {
         Serial.println("⏭️ MQTT ignoré (Wi-Fi non connecté)");
         return;
       }
-
       // Maintenant que user_id et topic_base sont récupérés :
       Commands = topic_base + "/" + user_id + "/cmd";
-
       client.setServer(mqtt_server, mqtt_port);
       client.setCallback(mqttCallback);
-
       connectMQTT();
     }
 
@@ -75,6 +71,7 @@ class MQTTController {
   private:
     void connectMQTT() {
       if (!wifi_connected) return;
+
       secureClient.setInsecure();  // Ignorer les certificats
 
       while (!client.connected()) {
@@ -83,8 +80,7 @@ class MQTTController {
 
         if (client.connect("ESPClient", mqtt_user, mqtt_password)) {
           Serial.println("✅ Connecté au broker MQTT !");
-          oled.displayText("MQTT OK", 0, 48, true);
-
+          oled.displayLock();
           client.subscribe(Commands.c_str());
           client.publish(Commands.c_str(), "0x10");  // exemple de premier message
           mqtt_connected = true;

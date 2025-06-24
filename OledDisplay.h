@@ -61,6 +61,19 @@ class OLEDDisplay {
       }
       ToneRefused(BUZZER_PIN);  // 🔴 Son de refus après animation
     }
+    void displayLock(){
+      display -> clearDisplay();
+      display-> drawBitmap(39, 7, lock_animationallArray[1], 50, 50, WHITE);
+      display->display();
+    }
+
+    void displayUnLock(){
+      display -> clearDisplay();
+      display -> drawBitmap(39, 7, unlock_animationallArray[1], 50, 50, WHITE);
+      display->display();
+    }
+
+
     void showAccepted(uint8_t BUZZER_PIN) {
       for (int i = 0; i < 23; i++) {
         display->clearDisplay();
@@ -68,7 +81,7 @@ class OLEDDisplay {
         display->display();
         delay(50);
       }
-      ToneAccepted(BUZZER_PIN);  // 🟢 Son d'acceptation après animation
+      ToneAccepted(BUZZER_PIN);  //  Son d'acceptation après animation
     }
     void showReset(uint8_t BUZZER_PIN) {
       display -> clearDisplay();
@@ -77,14 +90,14 @@ class OLEDDisplay {
       ToneReset(BUZZER_PIN);
     }
     void displayText(const String& text, int x = 0, int y = 0, int size = 1, bool clear = true) {
-    if (clear) {
-      display->clearDisplay();
-    }
-    display->setTextSize(size);
-    display->setTextColor(WHITE);
-    display->setCursor(x, y);
-    display->println(text);
-    display->display();
+      if (clear) {
+        display->clearDisplay();
+      }
+      display->setTextSize(size);
+      display->setTextColor(WHITE);
+      display->setCursor(x, y);
+      display->println(text);
+      display->display();
     }
 };
 #endif

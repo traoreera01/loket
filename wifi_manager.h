@@ -1,15 +1,16 @@
 #ifndef WIFI_MANAGER_H
 #define WIFI_MANAGER_H
-
+#include "mqtt.h"
 #include <WiFi.h>
 #include <WebServer.h>
 #include <Preferences.h>
 #include "OledDisplay.h"
 
+
 extern OLEDDisplay oled;
-extern bool wifi_connected;
 
 
+bool wifi_connected = false;
 WebServer server(80);
 
 String ssid_saved = "";
@@ -18,26 +19,6 @@ String topic_base = "";
 String user_id = "";
 
 Preferences preferences;
-unsigned long lastReconnectAttempt = 0;
-const unsigned long reconnectInterval = 10000; // 10 secondes
-
-#ifndef WIFI_MANAGER_H
-#define WIFI_MANAGER_H
-
-#include <WiFi.h>
-#include <WebServer.h>
-#include <Preferences.h>
-#include "OledDisplay.h"
-
-extern OLEDDisplay oled;
-
-WebServer server(80);
-Preferences preferences;
-
-String ssid_saved = "";
-String password_saved = "";
-String topic_base = "";
-String user_id = "";
 
 void handleRoot() {
     String html = R"rawliteral(
@@ -224,28 +205,5 @@ void handleWiFiConfigPortal() {
   // Si config présente mais Wi-Fi KO, on continue silencieusement
 }
 
-void checkWiFiReconnect() {
-  if (WiFi.status() != WL_CONNECTED) {
-    if (millis() - lastReconnectAttempt > reconnectInterval) {
-      Serial.println("🔄 Tentative de reconnexion WiFi...");
-      oled.displayText("Reconnexion WiFi...", 0, 0, true);
-      WiFi.begin(ssid_saved.c_str(), password_saved.c_str());
-      lastReconnectAttempt = millis();
-    }
-    wifi_connected = false;
-  } else {
-    if (!wifi_connected) {
-      // Si WiFi vient d'être reconnecté
-      Serial.println("✅ Reconnecté au WiFi !");
-      oled.displayText("WiFi OK", 0, 0, true);
-      wifi_connected = true;
-
-      // Reconnexion MQTT automatique
-      if (mqttCtrl != nullptr) {
-        mqttCtrl->begin(); // Redémarre MQTT proprement
-      }
-    }
-  }
-}
 
 #endif
